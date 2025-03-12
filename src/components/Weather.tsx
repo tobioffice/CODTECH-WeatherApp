@@ -3,6 +3,7 @@ import searchIcon from "../assets/search.svg";
 import axios from "axios";
 import { API_KEY, API_URL } from "../assets/env";
 import { Link } from "react-router-dom";
+import Weather_skeleton from "./skeleton/Weather_skeleton";
 
 interface WeatherCondition {
   text: string;
@@ -80,21 +81,30 @@ const Weather: React.FC = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
-    return (
-      <div className="h-screen flex w-full justify-center items-center">
-        <div className="text-amber-100">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
+    return <Weather_skeleton />;
   }
 
   if (!weather) {
-    return <div>No weather data available.</div>;
+    return (
+      <div className="h-screen flex w-full justify-center items-center p-4">
+        <div className="alert alert-warning w-full max-w-md">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <span>No weather data available.</span>
+        </div>
+      </div>
+    );
   }
 
   const localTime = new Date(weather.location.localtime);
@@ -111,7 +121,20 @@ const Weather: React.FC = () => {
   const dayName = localTime.toLocaleDateString("en-US", { weekday: "long" });
 
   return (
-    <div className=" flex w-full flex-col sm:flex-row ">
+    <div className=" flex w-full flex-col sm:flex-row">
+      {error && (
+        <div className="toast toast-top toast-center z-50">
+          <div className="alert alert-error">
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="btn btn-sm btn-circle btn-ghost"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
       <div className="bg-white sm:w-[33%] min-w-[300px] h-screen">
         <div
           id="searchbar"
@@ -175,11 +198,11 @@ const Weather: React.FC = () => {
           className="text-4xl font-bold flex p-2 text-gray-600  gap-4"
         >
           <p>Today</p>
-          <Link to="/" className="btn bg-gray-600 text-white">
+          <Link to="/" className="btn  text-back btn-outline">
             Home
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mt-5 ml-2">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 mt-5 ml-2">
           <div className="bg-blue-600 h-25 flex items-start justify-center rounded-2xl flex-col pl-5 py-4 gap-2">
             <p className="font-bold text-gray-200">Humidity</p>
             <p className="text-2xl font-bold">{weather.current.humidity}%</p>
